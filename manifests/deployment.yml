@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: app1camundaaks 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app1camundaaks
+  template:
+    metadata:
+      labels:
+        app: app1camundaaks 
+    spec:
+      containers:
+        - name: app1camundaaks 
+          image: acrforcamdemo2.azurecr.io/app1camundaaks
+          ports:
+          - containerPort: 8090
