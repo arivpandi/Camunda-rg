@@ -1,14 +1,50 @@
-FROM camunda/camunda-bpm-platform:tomcat-latest
 
-ENV VERSION=1.0.0-alpha9 \
-    GITHUB=https://github.com/camunda/camunda-bpm-workbench
+FROM alpine:3.12
 
-ADD ${GITHUB}/releases/download/${VERSION}/camunda-workbench-dist-embeddable-${VERSION}.jar /camunda/lib/
+ARG VERSION=7.15.0
 
-RUN xmlstarlet ed -L \
-      -s //_:process-engine/_:plugins -t elem -n TMP -v "" \
-      -s //TMP -t elem -n class -v "org.camunda.bpm.debugger.server.EmbeddableDebugWebsocketBootstrap" \
-      -r //TMP -v plugin \
-      /camunda/conf/bpm-platform.xml
+ENV CAMUNDA_VERSION=${VERSION}
+ENV DB_DRIVER=
+ENV DB_URL=
+ENV DB_USERNAME=
+ENV DB_PASSWORD=
+ENV DB_CONN_MAXACTIVE=20
+ENV DB_CONN_MINIDLE=5
+ENV DB_CONN_MAXIDLE=20
+ENV DB_VALIDATE_ON_BORROW=false
+ENV DB_VALIDATION_QUERY="SELECT 1"
+ENV SKIP_DB_CONFIG=
+ENV WAIT_FOR=
+ENV WAIT_FOR_TIMEOUT=30
+ENV TZ=UTC
+ENV DEBUG=false
+ENV JAVA_OPTS="-Xmx768m -XX:MaxMetaspaceSize=256m"
+ENV JMX_PROMETHEUS=false
+ENV JMX_PROMETHEUS_CONF=/camunda/javaagent/prometheus-jmx.yml
+ENV JMX_PROMETHEUS_PORT=9404
 
-EXPOSE 8090 9090
+EXPOSE 8080 8000 9404
+
+# Downgrading wait-for-it is necessary until this PR is merged
+# https://github.com/vishnubob/wait-for-it/pull/68
+RUN apk add --no-cache \
+        bash \
+        ca-certificates \
+        curl \
+        openjdk11-jre-headless \
+        tzdata \
+        tini \
+        xmlstarlet \
+    && curl -o /usr/local/bin/wait-for-it.sh \
+      "https://raw.githubusercontent.com/vishnubob/wait-for-it/a454892f3c2ebbc22bd15e446415b8fcb7c1cfa4/wait-for-it.sh" \
+    && chmod +x /usr/local/bin/wait-for-it.sh
+
+RUN addgroup -g 1000 -S camunda && \
+    adduser -u 1000 -S camunda -G camunda -h /camunda -s /bin/bash -D camunda
+WORKDIR /camunda
+USER camunda
+
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["./camunda.sh"]
+
+COPY --chown=camunda:camunda --from=builder /camunda .
