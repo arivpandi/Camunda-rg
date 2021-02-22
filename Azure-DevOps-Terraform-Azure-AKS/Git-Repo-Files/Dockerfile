@@ -1,4 +1,4 @@
-FROM camunda/camunda-bpm-platform:latest
+FROM camunda/camunda-bpm-platform:ltomcat-7.8.0
 RUN rm -r webapps/camunda-invoice
 
 COPY docker/camunda/conf/ conf
