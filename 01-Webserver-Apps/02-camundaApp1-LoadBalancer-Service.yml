@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app1-camunda-clusterip-service
+  labels:
+    app: app1-camunda
+spec:
+  type: LoadBalancer
+  selector:
+    app: app1-camunda
+  ports:
+    - port: 8080
+      targetPort: 8080

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vnode-camunda-deployment
+  labels:
+    app: vnode-camunda
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vnode-camunda
+  template:
+    metadata:
+      labels:
+        app: vnode-camunda
+    spec:
+      containers:
+        - name: vnode-camunda
+          image: camunda/camunda-bpm-platform:latest
+          ports:
+            - containerPort: 8090
+# To schedule pods on Azure Virtual Nodes            
+      nodeSelector:
+        kubernetes.io/role: agent
+        beta.kubernetes.io/os: linux
+        type: virtual-kubelet
+      tolerations:
+      - key: virtual-kubelet.io/provider
+        operator: Exists
+      - key: azure.com/aci
+        effect: NoSchedule            
+
+   
