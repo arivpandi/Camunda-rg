@@ -17,12 +17,12 @@ resource "azurerm_kubernetes_cluster_node_pool" "linux101" {
     "nodepool-type" = "user"
     "environment"   = var.environment
     "nodepoolos"    = "linux"
-    "app"           = "java-apps"
+    "app"           = "log-analytics-apps"
   }
   tags = {
     "nodepool-type" = "user"
     "environment"   = var.environment
     "nodepoolos"    = "linux"
-    "app"           = "java-apps"
+    "app"           = "log-analytics-apps"
   }
 }
