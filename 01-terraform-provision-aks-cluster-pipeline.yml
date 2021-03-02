@@ -43,5 +43,5 @@ stages:
         displayName: Terraform Validate
         inputs:
           command: 'validate'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-manifests'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Git-Repo-Files/terraform-manifests'
           allowTelemetryCollection: false
